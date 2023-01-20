@@ -125,9 +125,26 @@ cd to sandbox directory
 cd /home/johndoe/.cache/bazel/_bazel_johndoe/25d004fb5c04e5a88a6bfa9d50504171/sandbox/linux-sandbox/153/execroot/__main__
 ```
 
+set the correct env variable
+```
+export BAZEL_BINDIR=bazel-out/k8-fastbuild/bin \
+  BAZEL_BUILD_FILE_PATH=alpha/BUILD \
+  BAZEL_COMPILATION_MODE=fastbuild \
+  BAZEL_PACKAGE=alpha \
+  BAZEL_TARGET=//alpha:next \
+  BAZEL_TARGET_CPU=k8 \
+  BAZEL_TARGET_NAME=next \
+  BAZEL_WORKSPACE=__main__ \
+  JS_BINARY__CHDIR=alpha \
+  JS_BINARY__PATCH_NODE_FS=1 \
+  JS_BINARY__SILENT_ON_SUCCESS=1 \
+  JS_BINARY__USE_EXECROOT_ENTRY_POINT=1 \
+  TMPDIR=/tmp
+```
+
 Run next build using `node` and `next` file/binary that bazel use
 ```
-./external/nodejs_linux_amd64/bin/nodejs/bin/node bazel-out/k8-fastbuild/bin/node_modules/.aspect_rules_js/next@12.3.4_biqbaboplfbrettd7655fr4n2y/node_modules/next/dist/bin/next build bazel-out/k8-fastbuild/bin/alpha/
+bazel-out/k8-opt-exec-2B5CBBC6/bin/next_js_binary.sh build
 ```
 
 By running command above, its getting another error which is weird because its coming from the project, not `node_modules`
@@ -138,7 +155,7 @@ CSS Modules cannot be imported from within node_modules.
 ```
   
 ## Successful attempt
-We are guessing the problem are coming from symlink. So from previous step, we copy the project directory but removing the symlink
+We are guessing the problem are coming from symlink. So from previous step, we copy the project directory but removing the symlink and disable the `JS_BINARY__PATCH_NODE_FS`
 ```
 pwd
 /home/johndoe/.cache/bazel/_bazel_johndoe/25d004fb5c04e5a88a6bfa9d50504171/sandbox/linux-sandbox/153/execroot/__main__
@@ -146,9 +163,26 @@ pwd
 cp -arL bazel-out/k8-fastbuild/bin/alpha/ bazel-out/k8-fastbuild/bin/alpha2
 ```
 
+set the correct env variable
+```
+export BAZEL_BINDIR=bazel-out/k8-fastbuild/bin \
+  BAZEL_BUILD_FILE_PATH=alpha/BUILD \
+  BAZEL_COMPILATION_MODE=fastbuild \
+  BAZEL_PACKAGE=alpha \
+  BAZEL_TARGET=//alpha:next \
+  BAZEL_TARGET_CPU=k8 \
+  BAZEL_TARGET_NAME=next \
+  BAZEL_WORKSPACE=__main__ \
+  JS_BINARY__CHDIR=alpha2 \
+  JS_BINARY__PATCH_NODE_FS=0 \
+  JS_BINARY__SILENT_ON_SUCCESS=1 \
+  JS_BINARY__USE_EXECROOT_ENTRY_POINT=1 \
+  TMPDIR=/tmp
+```
+
 Running build to the directory without symlink
 ```
-./external/nodejs_linux_amd64/bin/nodejs/bin/node bazel-out/k8-fastbuild/bin/node_modules/.aspect_rules_js/next@12.3.4_biqbaboplfbrettd7655fr4n2y/node_modules/next/dist/bin/next build bazel-out/k8-fastbuild/bin/alpha2
+bazel-out/k8-opt-exec-2B5CBBC6/bin/next_js_binary.sh build
 ```
 
 **Success**
