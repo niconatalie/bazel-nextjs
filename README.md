@@ -1,1 +1,1 @@
-# bazel-nextjs
+# Bazel Next.js
